@@ -1,0 +1,16 @@
+# Кэш Python
+__pycache__/
+*.py[cod]
+
+# Переменные окружения
+.env
+
+# Кэш Flask
+instance/
+
+# Настройки VS Code
+.vscode/
+
+# Системные файлы Windows
+Thumbs.db
+Desktop.ini
