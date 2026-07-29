@@ -16,6 +16,7 @@ const snake = [
 
 let dx = CELL_SIZE;
 let dy = 0;
+let gameOver = false;
 
 function draw() {
 
@@ -33,17 +34,42 @@ function draw() {
         ctx.fillRect(segment.x, segment.y, CELL_SIZE, CELL_SIZE);
     }
 
+    if (gameOver) {
+        // Настройка шрифта и цвета
+        ctx.font = '30px Arial';
+        ctx.fillStyle = "gray";
+
+        // Рисуем текст с заливкой в точке с координатами x=50, y=100
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", canvas.width / 2, 300);
+
+    }
+
 }
 
 function update() {
+    if (gameOver) {
+        return;
+    }
+
     const head = {
-    x: snake[0].x + dx,
-    y: snake[0].y + dy
-};
+        x: snake[0].x + dx,
+        y: snake[0].y + dy
+    };
+
+    if (
+        head.x < 0 ||
+        head.x >= canvas.width ||
+        head.y < 0 ||
+        head.y >= canvas.height
+    ) {
+        gameOver = true;
+        return;
+    }
+
     snake.unshift(head);
     snake.pop();
 }
-
 // Запускаем все вместе
 draw();
 
