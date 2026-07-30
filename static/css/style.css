@@ -1,14 +1,56 @@
 body {
     margin: 0;
     background: #111;
+    height: 100vh;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+#menu {
+    text-align: center;
+}
+
+#menu h1 {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+#menu p {
+    font-size: 22px;
+}
+
+#play-btn {
+    margin-top: 20px;
+    padding: 15px 40px;
+
+    font-size: 24px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: lime;
+    color: black;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+#play-btn:hover {
+    transform: scale(1.05);
+}
+
+#game {
+    display: none;
 }
 
 canvas {
+    display: none;
+
     border: 3px solid white;
 }

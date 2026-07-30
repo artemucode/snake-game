@@ -8,8 +8,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+
+    <div id="menu">
+        <h1>🐍 Snake</h1>
+
+        <p>
+            Рекорд:
+            <span id="menu-best-score">0</span>
+        </p>
+
+        <button id="play-btn">
+            Играть
+        </button>
+
+        <p>Управление: WASD</p>
+        <p>R — перезапуск после проигрыша</p>
+    </div>
+
     <canvas id="game"></canvas>
-    <!-- Подключение JS -->
+
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+
 </body>
 </html>

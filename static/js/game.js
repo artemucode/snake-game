@@ -1,5 +1,7 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+const menu = document.getElementById("menu");
+const playButton = document.getElementById("play-btn");
 
 canvas.width = 600;
 canvas.height = 600;
@@ -23,6 +25,8 @@ let gameOver = false;
 
 let score = 0;
 let bestScore = 0;
+
+let paused = false;
 
 // создание нового яблока
 function createFood() {
@@ -59,25 +63,95 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Яблоко
-    ctx.fillStyle = "red";
-    ctx.fillRect(
-        food.x,
-        food.y,
-        CELL_SIZE,
-        CELL_SIZE
-    );
+    const centerX = food.x + CELL_SIZE / 2;
+    const centerY = food.y + CELL_SIZE / 2;
+
+    // Тень
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.arc(centerX + 2, centerY + 3, CELL_SIZE / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Само яблоко
+    ctx.beginPath();
+    ctx.fillStyle = "#e53935";
+    ctx.arc(centerX, centerY, CELL_SIZE / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Блик
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(255,255,255,0.6)";
+    ctx.arc(centerX - 4, centerY - 4, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Палочка
+    ctx.beginPath();
+    ctx.strokeStyle = "#6d4c41";
+    ctx.lineWidth = 2;
+    ctx.moveTo(centerX, centerY - 8);
+    ctx.lineTo(centerX, centerY - 13);
+    ctx.stroke();
+
+    // Листик
+    ctx.beginPath();
+    ctx.fillStyle = "#43a047";
+    ctx.ellipse(centerX + 4, centerY - 10, 4, 2, -0.5, 0, Math.PI * 2);
+    ctx.fill();
 
 
     // Змейка
-    ctx.fillStyle = "lime";
+    for (let i = 0; i < snake.length; i++) {
 
-    for (const segment of snake) {
-        ctx.fillRect(
-            segment.x,
-            segment.y,
-            CELL_SIZE,
-            CELL_SIZE
-        );
+        const segment = snake[i];
+
+        // Голова
+        if (i === 0) {
+
+            ctx.fillStyle = "#32cd32";
+            ctx.fillRect(
+                segment.x,
+                segment.y,
+                CELL_SIZE,
+                CELL_SIZE
+            );
+
+            // Белки глаз
+            ctx.fillStyle = "white";
+
+            ctx.beginPath();
+            ctx.arc(segment.x + 6, segment.y + 6, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(segment.x + 14, segment.y + 6, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Зрачки
+            ctx.fillStyle = "black";
+
+            ctx.beginPath();
+            ctx.arc(segment.x + 6, segment.y + 6, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(segment.x + 14, segment.y + 6, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+        }
+        // Тело
+        else {
+
+            ctx.fillStyle = "lime";
+
+            ctx.fillRect(
+                segment.x,
+                segment.y,
+                CELL_SIZE,
+                CELL_SIZE
+            );
+
+        }
+
     }
 
 
@@ -119,15 +193,39 @@ function draw() {
             canvas.height / 2 + 40
         );
     }
+
+    if (paused) {
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "yellow";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "ПАУЗА",
+        canvas.width / 2,
+        canvas.height / 2
+    );
+
+    ctx.font = "22px Arial";
+
+    ctx.fillText(
+        "Нажмите P для продолжения",
+        canvas.width / 2,
+        canvas.height / 2 + 40
+    );
+
+    }
 }
 
 
 function update() {
 
-    if (gameOver) {
+    if (gameOver || paused) {
         return;
     }
-
 
     const head = {
         x: snake[0].x + dx,
@@ -203,6 +301,10 @@ for (let i = 1; i < snake.length - 1; i++) {
 
 function restartGame() {
 
+    paused = false;
+
+    canvas.style.display = "block";
+
     snake = [
         { x: 100, y: 100 },
         { x: 80, y: 100 },
@@ -220,6 +322,8 @@ function restartGame() {
     createFood();
 
     gameOver = false;
+
+    draw();
 }
 
 
@@ -251,6 +355,18 @@ document.addEventListener("keydown", function (event) {
         restartGame();
     }
 
+    if (event.code === "KeyP" && !gameOver) {
+    paused = !paused;
+    }
+});
+
+playButton.addEventListener("click", () => {
+
+    menu.style.display = "none";
+    canvas.style.display = "block";
+
+    restartGame();
+
 });
 
 let gameSpeed = 200;
@@ -262,6 +378,8 @@ async function loadRecord() {
     const data = await response.json();
 
     bestScore = data.bestScore;
+
+    document.getElementById("menu-best-score").textContent = bestScore;
 
 }
 
@@ -276,7 +394,4 @@ function startGameLoop() {
 
 }
 
-loadRecord().then(() => {
-    draw();
-    startGameLoop();
-});
+loadRecord();
