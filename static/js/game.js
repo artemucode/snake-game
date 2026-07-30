@@ -22,7 +22,7 @@ let dy = 0;
 let gameOver = false;
 
 let score = 0;
-let bestScore = localStorage.getItem("bestScore") || 0;
+let bestScore = 0;
 
 // создание нового яблока
 function createFood() {
@@ -169,8 +169,19 @@ for (let i = 1; i < snake.length - 1; i++) {
 
         score++;
         if (score > bestScore) {
+
             bestScore = score;
-            localStorage.setItem("bestScore", bestScore);
+
+            fetch("/save-record", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    bestScore: bestScore
+                })
+            });
+
         }
 
         if (score % 5 === 0 && gameSpeed > 60) {
@@ -245,6 +256,15 @@ document.addEventListener("keydown", function (event) {
 let gameSpeed = 200;
 let gameLoop;
 
+async function loadRecord() {
+
+    const response = await fetch("/get-record");
+    const data = await response.json();
+
+    bestScore = data.bestScore;
+
+}
+
 function startGameLoop() {
 
     clearInterval(gameLoop);
@@ -256,5 +276,7 @@ function startGameLoop() {
 
 }
 
-draw();
-startGameLoop();
+loadRecord().then(() => {
+    draw();
+    startGameLoop();
+});
