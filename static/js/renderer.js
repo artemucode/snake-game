@@ -11,6 +11,16 @@ export function draw(ctx, canvas) {
     const centerX = state.food.x + CELL_SIZE / 2;
     const centerY = state.food.y + CELL_SIZE / 2;
 
+
+    // Размер карточки
+    const boxWidth = 400;
+    const boxHeight = 190;
+
+    // Положение карточки
+    const boxX = (canvas.width - boxWidth) / 2;
+    const boxY = (canvas.height - boxHeight) / 2;
+
+
     // Тень
     ctx.beginPath();
     ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
@@ -84,13 +94,38 @@ export function draw(ctx, canvas) {
 
     // Game Over
     if (state.gameOver) {
-        ctx.fillStyle = "gray";
-        ctx.font = "40px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
 
+        // Затемнение фона
+        ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Карточка
+        ctx.fillStyle = "#252526";
+        ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+        // Рамка
+        ctx.strokeStyle = "#4d4d4d";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+        // Настройки текста
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        // Заголовок
+        ctx.font = "bold 46px Arial";
+        ctx.fillStyle = "#ff6b6b";
+        ctx.fillText("GAME OVER", canvas.width / 2, boxY + 45);
+
+        // Счёт
+        ctx.font = "26px Arial";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(`Счёт: ${state.score}`, canvas.width / 2, boxY + 95);
+
+        // Подсказка
         ctx.font = "22px Arial";
-        ctx.fillText("Нажмите R для перезапуска", canvas.width / 2, canvas.height / 2 + 40);
+        ctx.fillStyle = "#a8a8a8";
+        ctx.fillText("Нажмите R для перезапуска", canvas.width / 2, boxY + 145);
     }
 
     // Пауза
