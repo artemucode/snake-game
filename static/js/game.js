@@ -3,6 +3,7 @@ import { state, resetGameState } from "./state.js";
 import { createFood } from "./food.js";
 import { draw } from "./renderer.js";
 import { setupInput } from "./input.js";
+import { playEat, playGameOver, playStart } from "./sound.js";
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -28,12 +29,14 @@ function update() {
         head.y < 0 ||
         head.y >= canvas.height
     ) {
+        playGameOver();
         state.gameOver = true;
         return;
     }
 
     for (let i = 1; i < state.snake.length; i++) {
         if (head.x === state.snake[i].x && head.y === state.snake[i].y) {
+            playGameOver();
             state.gameOver = true;
             return;
         }
@@ -42,6 +45,7 @@ function update() {
     state.snake.unshift(head);
 
     if (head.x === state.food.x && head.y === state.food.y) {
+        playEat();
         state.score++;
 
         if (state.score > state.bestScore) {
@@ -61,6 +65,7 @@ function update() {
 }
 
 function startGameLoop() {
+    playStart();
     clearInterval(state.gameLoop);
     state.gameLoop = setInterval(() => {
         update();
